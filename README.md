@@ -1,8 +1,5 @@
-<p align="center">
-    <img src="https://www.nextflow.io/img/logo.png" alt="Nextflow Logo" height="60"/>
-    &nbsp;&nbsp;
-    <img src="https://www.docker.com/wp-content/uploads/2022/03/Moby-logo.png" alt="Docker Logo" height="60"/>
-</p>
+[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A522.10.1-23aa62.svg)](https://www.nextflow.io/)
+[![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 
 # Plasmid Outbreak Reporting Tool (PORT)
 
@@ -14,6 +11,10 @@
 ## Overview
 
 PORT (Plasmid Outbreak Reporting Tool) is a pipeline designed to process Oxford Nanopore sequencing reads for plasmid outbreak analysis. It automates quality control, trimming, and assembly steps to generate high-quality plasmid assemblies from raw sequencing data.
+
+## Authors
+
+Jia Qi Beh, Varun Shamamna, Célia Souque, Andreza Francisco Martins, Henrik Hasman, Louise Roer
 
 ## Features
 
