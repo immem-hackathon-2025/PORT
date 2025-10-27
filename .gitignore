@@ -1,0 +1,7 @@
+.nextflo*
+work
+*out*
+*.html
+*.dag
+*test*
+.venv
