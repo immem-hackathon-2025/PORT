@@ -32,7 +32,7 @@ Jia Qi Beh, Varun Shamamna, Célia Souque, Andreza Francisco Martins, Henrik Has
 
 Clone the repository and install dependencies:
 
-```bash
+
 Make sure you have [Docker](https://www.docker.com/) installed and running.
 
 Install [Nextflow](https://www.nextflow.io/) if you haven't already:
