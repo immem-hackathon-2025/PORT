@@ -4,7 +4,7 @@ process QUAST {
     label 'process_single'
     label 'quast_container'
     
-    publishDir "${params.outdir}/quast_summary", mode: 'copy', pattern: "*.tsv"
+    publishDir "${params.output_dir}/quast_summary", mode: 'copy', pattern: "*.tsv"
 
     input:
     tuple val(sample_id), path(assembly)

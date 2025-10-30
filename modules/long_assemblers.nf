@@ -38,13 +38,12 @@ process AUTOCYCLER {
     
     output:
         tuple val(sample_id), path("${sample_id}_assembly.fasta"), emit: assembly
+        tuple val(sample_id), path("${sample_id}_assembly_graph.gfa"), emit: assembly_graph
 
     script:
-    "/bin/bash -euo pipefail {0}"
-
     """
-    #run autocycler with 1 job
-    export PATH=/opt/conda/envs/autocycler/bin:/opt/conda/envs/unicycler_env/bin:\$PATH
     autocycler.sh $reads $task.cpus 4 $read_type
+    mv autocycler_out/consensus_assembly.fasta ${sample_id}_assembly.fasta
+    mv autocycler_out/consensus_assembly.gfa ${sample_id}_assembly_graph.gfa
     """
 }

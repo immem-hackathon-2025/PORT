@@ -1,6 +1,9 @@
 process AMRFINDERPLUS_RUN {
     tag "$sample_id"
     label 'process_medium'
+    label 'amrfinderplus_container'
+
+    publishDir "${params.output_dir}/amrfinder_results", mode: 'copy', pattern: "*.tsv"
 
     input:
     tuple val(sample_id), path(fasta)

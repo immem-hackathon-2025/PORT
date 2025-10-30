@@ -17,6 +17,7 @@ reads=$1                 # input reads FASTQ
 threads=$2               # threads per job
 jobs=$3                  # number of simultaneous jobs
 read_type=${4:-ont_r10}  # read type (default = ont_r10)
+genome_size=${5:-}       # genome size (optional)
 
 # Input assembly jobs that exceed this time limit will be killed
 max_time="8h"
@@ -36,8 +37,12 @@ case $read_type in
     *) echo "Error: read_type must be ont_r9, ont_r10, pacbio_clr or pacbio_hifi" 1>&2; exit 1 ;;
 esac
 
-#genome_size=5.5m
-genome_size=$(autocycler helper genome_size --reads "$reads" --threads "$threads")
+# If genome size is not provided, estimate automatically
+if [ -z "$genome_size" ]; then
+    echo "No genome size provided — estimating using Autocycler..."
+    genome_size=$(autocycler helper genome_size --reads "$reads" --threads "$threads")
+    echo "Estimated genome size: $genome_size"
+fi
 
 # Step 1: subsample the long-read set into multiple files
 autocycler subsample --reads "$reads" --out_dir subsampled_reads --genome_size "$genome_size" 2>> autocycler.stderr
@@ -45,18 +50,18 @@ autocycler subsample --reads "$reads" --out_dir subsampled_reads --genome_size "
 # Step 2: assemble each subsampled file
 mkdir -p assemblies
 rm -f assemblies/jobs.txt
-for assembler in   raven miniasm flye metamdbg necat nextdenovo; do
+for assembler in  raven miniasm flye necat nextdenovo plassembler; do
     for i in 01 02 03 04; do
         autocycler helper $assembler --reads subsampled_reads/sample_$i.fastq --out_prefix assemblies/${assembler}_$i --threads $threads --genome_size $genome_size --read_type $read_type --min_depth_rel 0.1
     done
 done
 
-# plassembler
+#metamdbg
 
 # Give circular contigs from Plassembler extra clustering weight
-#for f in assemblies/plassembler*.fasta; do
-#    sed -i 's/circular=True/circular=True Autocycler_cluster_weight=2/' "$f"
-#done
+for f in assemblies/plassembler*.fasta; do
+    sed -i 's/circular=True/circular=True Autocycler_cluster_weight=2/' "$f"
+done
 
 # Give contigs from and Flye extra consensus weight
 for f in assemblies/flye*.fasta; do

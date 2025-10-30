@@ -32,11 +32,8 @@ RUN conda config --set channel_priority  strict && \
 RUN conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main && \
     conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
 
-RUN conda install python=3.12 -y
+RUN apt-get update && apt-get install -y build-essential
 
-# Accept Terms of Service for Anaconda channels
-RUN conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main && \
-    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
 # ------------------------------
 # Copy environment file & create env
 # ------------------------------
@@ -51,7 +48,7 @@ ENV CONDA_DEFAULT_ENV=autocycler
 ENV CONDA_PREFIX=/opt/conda/envs/autocycler
 RUN conda init bash
 
-
+#USER root
 # --------------------------------------------------
 # Download Plassembler DB inside conda environment
 # --------------------------------------------------
@@ -60,11 +57,19 @@ RUN /bin/bash -c "source /opt/conda/bin/activate autocycler && \
 
 ENV PLASSEMBLER_DB="/opt/conda/envs/autocycler/plassembler_db"
 
-RUN pip install paralleltask
+RUN conda run -n autocycler pip install paralleltask
+
 
 # Patch Plassembler to handle Unicycler version parsing robustly
 RUN sed -i 's/unicycler_out = unicycler_out.decode()/unicycler_out = unicycler_out.decode().strip()/' \
     /opt/conda/envs/autocycler/lib/python3.12/site-packages/plassembler/utils/input_commands.py
+
+## Fix NextPolish Python interpreter and dependencies
+RUN sed -i '1s|.*|#!/opt/conda/envs/autocycler/bin/python|' /opt/conda/envs/autocycler/bin/nextPolish
+
+RUN sed -i 's/process = sp.Popen(\["unicycler", "--version".*/unicycler_out = "Unicycler v0.5.1"/' /opt/conda/envs/autocycler/lib/python3.12/site-packages/plassembler/utils/input_commands.py
+#RUN sed -i '/process = sp.Popensp.Popen(["unicycler", "--version"]/,/process.communicate()/c\        unicycler_out = "Unicycler v0.5.1"' /opt/conda/envs/autocycler/lib/python3.12/site-packages/plassembler/utils/input_commands.py
+RUN sed -i 's/unicycler_out, _ = process.communicate()/unicycler_out = b"Unicycler v0.5.1"/' /opt/conda/envs/autocycler/lib/python3.*/site-packages/plassembler/utils/input_commands.py
 
 # --------------------------------------------------
 # Set working directory
