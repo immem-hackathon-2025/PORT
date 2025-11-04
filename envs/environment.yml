@@ -1,0 +1,38 @@
+name: port_env
+channels:
+  - bioconda
+  - conda-forge
+
+dependencies:
+
+  #nextflow
+  - nextflow>=22.10.6
+
+  # Assembly and processing tools
+  - autocycler>=0.5.0            # https://github.com/rrwick/Autocycler
+  - canu>=2.3                    # https://github.com/marbl/canu
+  - flye>=2.9.6                  # https://github.com/mikolmogorov/Flye
+  - metamdbg>=1.0                # https://github.com/GaetanBenoitDev/metaMDBG
+  - miniasm>=0.3                 # https://github.com/lh3/miniasm
+  - minimap2>=2.28               # https://github.com/lh3/minimap2
+  - minipolish>=0.2.0            # https://github.com/rrwick/Minipolish
+  - myloasm>=0.1.0               # https://github.com/bluenote-1577/myloasm
+  - necat>=0.0.1_update20200803  # https://github.com/xiaochuanle/NECAT
+  - nextdenovo>=2.5.2            # https://github.com/Nextomics/NextDenovo
+  - nextpolish>=1.4.1            # https://github.com/Nextomics/NextPolish
+  - plassembler>=1.8.0           # https://github.com/gbouras13/plassembler
+  - racon>=1.5.0                 # https://github.com/lbcb-sci/racon
+  - raven-assembler>=1.8.3       # https://github.com/lbcb-sci/raven
+  - wtdbg>=2.5                   # https://github.com/ruanjue/wtdbg2
+  - porechop>=0.2.4              # https://github.com/rrwick/Porechop
+  - nanoplot>=1.46.1             # https://github.com/wdecoster/NanoPlot
+  - medaka>=2.1.1                # https://github.com/nanoporetech/medaka
+  - dragonflye>=1.2.1            # https://github.com/rpetit3/dragonflye
+
+  # AMR and plasmid typing
+  - ncbi-amrfinderplus>=4.0.23  # https://github.com/ncbi/amr
+  - mob_suite>=3.1.9            # https://github.com/phac-nml/mob-suite
+  - plasmidfinder>=2.1.6        # https://bitbucket.org/genomicepidemiology/plasmidfinder/src/master/
+
+  # Assembly evaluation
+  - quast>=5.3.0               #https://github.com/ablab/quast

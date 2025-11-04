@@ -47,6 +47,47 @@ Clone the repository:
 git clone https://github.com/your-org/PORT.git
 cd PORT
 ```
+## ⚙️ Profiles: Docker (default) vs Conda
+
+This pipeline supports two execution profiles — **Docker** (default) and **Conda**.  
+The behavior depends on whether you specify the `-profile` option when running Nextflow.
+
+---
+
+### 🐳 Default: Docker Profile (No `-profile` specified)
+
+If you **do not specify any profile**, Nextflow will use the **default `standard` (Docker)** profile.
+
+In this mode:
+- All required tools are pulled automatically from pre-built Docker containers.
+- No local setup or Conda environment is required.
+- The first run will take longer because Nextflow downloads the container images.
+
+Example:
+```bash
+nextflow run main.nf --input_dir input_folder --output_dir output_folder
+```
+
+### 🧬 Conda Profile (Manual Environment)
+
+If you specify **-profile conda**,
+Nextflow will not use Docker and will instead expect you to have a Conda environment already set up.
+
+You must:
+
+1. Create and activate the environment before running:
+```bash
+#create conda env 
+conda env create -f envs/environment.yml -y
+#activate the env
+conda activate port_env
+```
+
+2. Then run the pipeline:
+```bash
+nextflow run main.nf --assemblies assemblies/ -resume --read_type ont_r9 -profile conda
+```
+
 
 ## ⚙️ Usage
 

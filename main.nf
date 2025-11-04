@@ -2,41 +2,60 @@
 
 nextflow.enable.dsl=2
 
-include { PORECHOP         } from './modules/preprocess'
-include { NANOPLOT         } from './modules/preprocess'
-include {DRAGONFLYE        } from './modules/long_assemblers'
-include {AUTOCYCLER        } from './modules/long_assemblers'
-include {QUAST             } from './modules/assembly_assess'
-include {AMRFINDERPLUS_RUN } from './modules/amrfinder'
-include {MOBSUITE_RECON    } from './modules/mobsuite'
-include {PLASMIDFINDER    } from './modules/plasmidfinder'
+/*
+========================================================================================
+        IMPORT PLUGINS
+========================================================================================
+*/
+
+include { validateParameters; paramsSummaryLog; samplesheetToList } from 'plugin/nf-schema'
+include { startMessage } from './modules/messages'
+
+include { PORECHOP          } from './modules/preprocess'
+include { NANOPLOT          } from './modules/preprocess'
+include { DRAGONFLYE        } from './modules/long_assemblers'
+include { AUTOCYCLER        } from './modules/long_assemblers'
+include { QUAST             } from './modules/assembly_assess'
+include { AMRFINDERPLUS_RUN } from './modules/amrfinder'
+include { MOBSUITE_RECON    } from './modules/mobsuite'
+include { PLASMIDFINDER     } from './modules/plasmidfinder'
+include { check_env         } from './modules/check_env'
+
+
 
 
 
 workflow {
 
-    // Check mandatory params
-    if( !params.input_dir ) {
-        error "Pleas use --input_dir to specify folder containing nanopore reads."
-    }
+    println "       🚀 Starting main PORT pipeline..."
+    startMessage(workflow.manifest.version)
 
-    // Check input directory exists
-    if( !file(params.input_dir).exists() ) {
-        error "Input directory '${params.input_dir}' does not exist."
-    }
+     // Print summary of supplied parameters
+    log.info paramsSummaryLog(workflow) 
+
+    // Check output directory exists
     if( !file(params.output_dir).exists() ) {
         println "Creating output directory '${params.output_dir}'."
         file(params.output_dir).mkdirs()
     } else {
+        println "--------------------------------------------------------------------------------"
         println "Overwriting results in existing output directory '${params.output_dir}'."
+        println "--------------------------------------------------------------------------------"
+    }
+
+
+    // ─────────────────────────────
+    // 🧬 Conditional Environment Check
+    // ─────────────────────────────
+
+    if (workflow.profile == 'conda') {
+        check_env()
     }
 
     // ─────────────────────────────────────────────
     // 1️⃣  Input handling
     // ─────────────────────────────────────────────
     if (params.assemblies) {
-        log.info "Assemblies directory provided: ${params.assemblies}"
-    
         // Pick up .fasta or .fa files
         channel
             .fromPath("${params.assemblies}/*.{fa,fasta}", checkIfExists: true)
@@ -48,8 +67,7 @@ workflow {
             .set { assemblies_ch }
 
     } else {
-        log.info "No assemblies provided — starting from raw FASTQ reads in '${params.input_dir}'"
-
+        // Pick up .fastq or .fastq.gz files
         channel
             .fromPath("${params.input_dir}/*.{fastq,fastq.gz}", checkIfExists: true)
             .ifEmpty { error "No FASTQ files found in input directory '${params.input_dir}'." }
